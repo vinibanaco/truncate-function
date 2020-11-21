@@ -1,17 +1,42 @@
-const truncate = (text, maxLength, ellipses='...') => {
+const truncate = (
+  text,
+  maxLength,
+  { ellipses = '...', position = 'left', includeEllipsesLength = true } = {},
+) => {
   const strText = String(text);
-  
-  if (strText.length <= maxLength) {
+  const textLength = strText.length;
+
+  if (textLength <= maxLength) {
     return strText;
   }
 
-  const croppedText = strText.substring(0, maxLength - ellipses.length);
+  const realMaxLength = includeEllipsesLength ? maxLength - ellipses.length : maxLength;
 
-  return `${croppedText}${ellipses}`;
+  switch (position) {
+    case 'left': {
+      const croppedText = strText.substring(0, realMaxLength);
+      return `${croppedText}${ellipses}`;
+    }
+
+    case 'right': {
+      const croppedText = strText.substring(textLength - realMaxLength, textLength);
+      return `${ellipses}${croppedText}`;
+    }
+
+    case 'middle': {
+      const leftTextLength = Math.ceil(realMaxLength / 2);
+      const rightTextLength = Math.floor(realMaxLength / 2);
+
+      const leftText = strText.substring(0, leftTextLength);
+      const rightText = strText.substring(textLength - rightTextLength, textLength);
+
+      return `${leftText}${ellipses}${rightText}`;
+    }
+
+    default: {
+      throw new Error(`Unhandled value supplied to \`position\`: ${position}`);
+    }
+  }
 };
 
-console.log(
-  truncate('pudim', 5),
-  truncate('long long phrase', 12),
-  truncate('this is a secret', 14, '***')
-)
+export default truncate;
