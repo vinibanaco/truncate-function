@@ -1,7 +1,7 @@
 const truncate = (
   text,
   maxLength,
-  { ellipses = '...', position = 'left', includeEllipsesLength = true } = {},
+  { ellipses = '...', position = 'right', includeEllipsesLength = true } = {},
 ) => {
   const strText = String(text);
   const textLength = strText.length;
@@ -14,13 +14,13 @@ const truncate = (
 
   switch (position) {
     case 'left': {
-      const croppedText = strText.substring(0, realMaxLength);
-      return `${croppedText}${ellipses}`;
+      const croppedText = strText.substring(textLength - realMaxLength, textLength);
+      return `${ellipses}${croppedText}`;
     }
 
     case 'right': {
-      const croppedText = strText.substring(textLength - realMaxLength, textLength);
-      return `${ellipses}${croppedText}`;
+      const croppedText = strText.substring(0, realMaxLength);
+      return `${croppedText}${ellipses}`;
     }
 
     case 'middle': {
